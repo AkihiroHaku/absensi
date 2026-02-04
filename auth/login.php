@@ -4,9 +4,9 @@ require_once "../config/database.php";
 
 if (isset($_SESSION['login'])) {
     if (isset($_SESSION['role']) && $_SESSION['role'] == 'guru') {
-        header("Location: /absensi/dashboard_guru.php");
+        header("Location: ../guru/index.php"); 
     } else {
-        header("Location: /absensi/dashboard.php");
+        header("Location: ../admin/dashboard.php"); 
     }
     exit;
 }
@@ -28,17 +28,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $user = mysqli_fetch_assoc($result);
 
         if (password_verify($password, $user['password'])) {
-            
-            // Set Session
+
             $_SESSION['login'] = true;
             $_SESSION['id_user'] = $user['id_user'];
             $_SESSION['username'] = $user['username'];
-            $_SESSION['role'] = $user['nama_role']; // Pastikan di database namanya 'admin' atau 'guru'
-
+            $_SESSION['role'] = $user['nama_role']; 
             if ($user['nama_role'] == 'guru') {
+                
+                $q_guru = mysqli_query($conn, "SELECT * FROM guru WHERE id_user = '" . $user['id_user'] . "'");
+                
+                // Cek apakah data gurunya ada?
+                if (mysqli_num_rows($q_guru) > 0) {
+                    $d_guru = mysqli_fetch_assoc($q_guru);
+                    $_SESSION['id_guru']   = $d_guru['id_guru'];
+                    $_SESSION['nama_guru'] = $d_guru['nama_guru']; 
+                    $_SESSION['nip']       = $d_guru['nip'];
+                }
+
                 header("Location: ../guru/index.php");
+                
             } else {
-                header("Location: /absensi/dashboard.php");
+                header("Location: ../data/dashboard.php");
             }
             exit;
 

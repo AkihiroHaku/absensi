@@ -165,17 +165,4 @@ $nama_bulan = [
     <?php endif; ?>
 </div>
 
-<style>
-@media print {
-    /* Sembunyikan Header, Menu, Filter saat diprint */
-    header, .tabs, form, .btn { display: none !important; }
-    /* Pastikan Container full width */
-    .container, .card { width: 100%; box-shadow: none; margin: 0; padding: 0; }
-    /* Tampilkan border tabel lebih jelas */
-    table, th, td { border: 1px solid black !important; }
-    /* Warna background cetak */
-    * { -webkit-print-color-adjust: exact; }
-}
-</style>
-
 <?php include "layout_footer.php"; ?>
