@@ -2,7 +2,6 @@
 session_start();
 require_once "../config/database.php";
 
-// 1. Cek Login
 if (!isset($_SESSION['role'])) {
     header("Location: ../auth/login.php");
     exit;
@@ -11,7 +10,7 @@ if (!isset($_SESSION['role'])) {
 $judul_halaman = "Rekap Absensi Siswa";
 $active_menu = 'absensi';
 
-// 2. Inisialisasi Filter
+// Inisialisasi Filter
 $bulan_ini = date('m');
 $tahun_ini = date('Y');
 
@@ -49,10 +48,8 @@ $nama_bulan = [
             <div class="rekap-header">
                 <div>
                     <h3><i class="fas fa-clipboard-list"></i> Rekap Absensi Siswa</h3>
-                    <p class="rekap-desc">Laporan Bulanan per Mata Pelajaran</p>
+                    <p class="rekap-desc">Laporan Bulanan Siswa</p>
                 </div>
-                <?php if($f_kelas && $f_mapel): ?>
-                <?php endif; ?>
             </div>
 
             <form action="" method="GET" class="filter-box" id="formFilter">
@@ -72,13 +69,16 @@ $nama_bulan = [
                 </div>
 
                 <div class="filter-item">
-                    <label class="filter-label">Mata Pelajaran</label>
+                    <label class="filter-label">Jenis Laporan / Mapel</label>
                     <select name="mapel" class="form-control">
-                        <option value="">-- Pilih Mapel --</option>
+                        <option value="">-- Pilih --</option>
+                        
+                        <option value="harian" style="font-weight:bold;" <?= ($f_mapel == 'harian') ? 'selected' : '' ?>>
+                            Rekap Harian 
+                        </option>
+
                         <?php 
-                        // LOGIKA BARU (Sesuai Struktur Tabel 'mapel' kamu)
                         if ($f_kelas) {
-                            // Ambil mapel yang id_kelas-nya SAMA dengan kelas yang sedang dipilih
                             $query_mapel = "SELECT * FROM mapel WHERE id_kelas = '$f_kelas' ORDER BY nama_mapel ASC";
                             $q_mapel = mysqli_query($conn, $query_mapel);
                             
@@ -133,84 +133,133 @@ $nama_bulan = [
                                 <th width="15%">NIS</th>
                                 <th>Nama Siswa</th>
                                 <th width="8%" class="th-center"><span class="dot dot-h"></span>H</th>
-                                <th width="8%" class="th-center"><span class="dot dot-i"></span>I</th>
                                 <th width="8%" class="th-center"><span class="dot dot-s"></span>S</th>
+                                <th width="8%" class="th-center"><span class="dot dot-i"></span>I</th>
                                 <th width="8%" class="th-center"><span class="dot dot-a"></span>A</th>
                                 <th width="20%" class="th-center">Persentase</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php
-                            // --- LOGIKA MEMILIH TABEL SISWA (Detektif) ---
-
+                            // TABEL SISWA 
                             $q_cek = mysqli_query($conn, "SELECT nama_kelas FROM kelas WHERE id_kelas='$f_kelas'");
                             $d_cek = mysqli_fetch_assoc($q_cek);
-                            $nama_kelas_str = strtoupper($d_cek['nama_kelas']); // Ubah ke Huruf Besar biar mudah dicek
+                            $nama_kelas_str = strtoupper($d_cek['nama_kelas']);
 
                             if (strpos($nama_kelas_str, '10') !== false || strpos($nama_kelas_str, 'X ') !== false || strpos($nama_kelas_str, 'X-') !== false) {
                                 $tabel_siswa = 'siswa_kelas10';
-                            }
-                            elseif (strpos($nama_kelas_str, '11') !== false || strpos($nama_kelas_str, 'XI') !== false) {
+                            } elseif (strpos($nama_kelas_str, '11') !== false || strpos($nama_kelas_str, 'XI') !== false) {
                                 $tabel_siswa = 'siswa_kelas11';
-                            }
-                            elseif (strpos($nama_kelas_str, '12') !== false || strpos($nama_kelas_str, 'XII') !== false) {
+                            } elseif (strpos($nama_kelas_str, '12') !== false || strpos($nama_kelas_str, 'XII') !== false) {
                                 $tabel_siswa = 'siswa_kelas12';
-                            } 
-                            else {
+                            } else {
                                 $tabel_siswa = 'siswa_kelas10'; 
                             }
 
-                            // --- QUERY UTAMA ---
-                            $query = "
-                                SELECT 
-                                    s.nis, s.nama, /* Pastikan di tabelmu kolomnya 'nama' atau 'nama_siswa'? Sesuaikan disini */
-                                    SUM(CASE WHEN a.status = 'H' THEN 1 ELSE 0 END) as jum_h,
-                                    SUM(CASE WHEN a.status = 'I' THEN 1 ELSE 0 END) as jum_i,
-                                    SUM(CASE WHEN a.status = 'S' THEN 1 ELSE 0 END) as jum_s,
-                                    SUM(CASE WHEN a.status = 'A' THEN 1 ELSE 0 END) as jum_a,
-                                    COUNT(a.id_absensi) as total_input
-                                FROM $tabel_siswa s
-                                LEFT JOIN absensi_siswa a 
-                                    ON s.nis = a.nis 
-                                    AND a.id_mapel = '$f_mapel' 
-                                    AND MONTH(a.tanggal) = '$f_bulan' 
-                                    AND YEAR(a.tanggal) = '$f_tahun'
-                                /* WHERE s.id_kelas = '$f_kelas'  <-- HAPUS baris ini jika tabel siswa pisah TIDAK punya kolom id_kelas */
-                                GROUP BY s.nis
-                                ORDER BY s.nama ASC
-                            ";
+                            // LOGIKA QUERY UTAMA
+                            
+                            $query = "";
+
+                            if ($f_mapel == 'harian') {
+                                
+                                $query = "SELECT * FROM $tabel_siswa ORDER BY nama ASC";
+                            } else {
+
+                                $query = "
+                                    SELECT 
+                                        s.nis, s.nama, 
+                                        SUM(CASE WHEN a.status = 'H' THEN 1 ELSE 0 END) as jum_h,
+                                        SUM(CASE WHEN a.status = 'S' THEN 1 ELSE 0 END) as jum_s,
+                                        SUM(CASE WHEN a.status = 'I' THEN 1 ELSE 0 END) as jum_i,
+                                        SUM(CASE WHEN a.status = 'A' THEN 1 ELSE 0 END) as jum_a,
+                                        COUNT(a.id_absensi) as total_input
+                                    FROM $tabel_siswa s
+                                    LEFT JOIN absensi_siswa a 
+                                        ON s.nis = a.nis 
+                                        AND a.id_mapel = '$f_mapel'
+                                        AND MONTH(a.tanggal) = '$f_bulan' 
+                                        AND YEAR(a.tanggal) = '$f_tahun'
+                                    GROUP BY s.nis
+                                    ORDER BY s.nama ASC
+                                ";
+                            }
 
                             $result = mysqli_query($conn, $query);
 
                             if (!$result) {
-                                // Info Error jika tabel tidak ditemukan
-                                echo "<tr><td colspan='8' class='msg-error'>
-                                    Gagal mengambil data dari tabel <b>$tabel_siswa</b>.<br>
-                                    <small>" . mysqli_error($conn) . "</small>
-                                </td></tr>";
+                                echo "<tr><td colspan='8' class='msg-error'>Error: " . mysqli_error($conn) . "</td></tr>";
                             } elseif (mysqli_num_rows($result) > 0) {
                                 $no = 1;
+                                
                                 while ($row = mysqli_fetch_assoc($result)) {
-                                    $total = $row['total_input'];
-                                    $persen = ($total > 0) ? round(($row['jum_h'] / $total) * 100) : 0;
+                                    $nis = $row['nis'];
                                     
+                                    // VARIABEL PENAMPUNG HASIL
+                                    $h = 0; $s_cnt = 0; $i = 0; $a = 0; $persen = 0;
+
+                                    // PENGHITUNGAN DATA 
+                                    if ($f_mapel == 'harian') {
+                                        // LOGIKA KHUSUS HARIAN
+                                        $q_absen = mysqli_query($conn, "SELECT DAY(tanggal) as tgl, status FROM absensi_siswa 
+                                                                        WHERE nis='$nis' 
+                                                                        AND MONTH(tanggal)='$f_bulan' 
+                                                                        AND YEAR(tanggal)='$f_tahun'
+                                                                        ORDER BY tanggal ASC");
+                                        $data_temp = [];
+                                        
+                                        while ($d = mysqli_fetch_assoc($q_absen)) {
+                                            $tgl = $d['tgl'];
+                                            $stat = $d['status'];
+                                            
+                                            if (!isset($data_temp[$tgl])) {
+                                                $data_temp[$tgl] = $stat;
+                                            } else {
+                                                // cek prioritas
+                                                $old = $data_temp[$tgl];
+                                                if ($stat == 'H') $data_temp[$tgl] = 'H';
+                                                elseif ($stat == 'S' && $old != 'H') $data_temp[$tgl] = 'S';
+                                                elseif ($stat == 'I' && $old == 'A') $data_temp[$tgl] = 'I';
+                                            }
+                                        }
+
+                                        // Hitung Total Final
+                                        foreach ($data_temp as $final_stat) {
+                                            if ($final_stat == 'H') $h++;
+                                            elseif ($final_stat == 'S') $s_cnt++;
+                                            elseif ($final_stat == 'I') $i++;
+                                            elseif ($final_stat == 'A') $a++;
+                                        }
+                                        
+                                        $total_hari = $h + $s_cnt + $i + $a;
+                                        $persen = ($total_hari > 0) ? round(($h / $total_hari) * 100) : 0;
+
+                                    } else {
+                                        // AMBIL DARI QUERY SQL
+                                        $h = $row['jum_h'];
+                                        $s_cnt = $row['jum_s'];
+                                        $i = $row['jum_i'];
+                                        $a = $row['jum_a'];
+                                        
+                                        $total = $row['total_input'];
+                                        $persen = ($total > 0) ? round(($h / $total) * 100) : 0;
+                                    }
+
+                                    // TAMPILAN BAR PROGRESS
                                     if ($persen >= 80) $class_bar = 'bg-high';
                                     elseif ($persen >= 50) $class_bar = 'bg-med';
                                     else $class_bar = 'bg-low';
 
-                                    $class_alpha = ($row['jum_a'] > 0) ? 'text-red' : 'text-mute';
-                                    
-                                    // Cek nama kolom nama (nama / nama_siswa)
-                                    $nama_tampil = isset($row['nama']) ? $row['nama'] : $row['nama_siswa'];
+                                    $class_alpha = ($a > 0) ? 'text-red' : 'text-mute';
+                                    $nama_tampil = isset($row['nama']) ? $row['nama'] : (isset($row['nama_siswa']) ? $row['nama_siswa'] : '-');
                             ?>
                                 <tr>
                                     <td class="td-num"><?= $no++; ?></td>
-                                    <td class="font-mono"><?= $row['nis']; ?></td>
+                                    <td class="font-mono"><?= $nis; ?></td>
                                     <td class="td-bold"><?= $nama_tampil; ?></td>
-                                    <td class="td-num"><?= $row['jum_h']; ?></td>
-                                    <td class="td-num"><?= $row['jum_i']; ?></td>
-                                    <td class="td-num"><?= $row['jum_s']; ?></td>
-                                    <td class="td-num <?= $class_alpha; ?>"><?= $row['jum_a']; ?></td>
+                                    <td class="td-num"><?= $h; ?></td>
+                                    <td class="td-num"><?= $s_cnt; ?></td>
+                                    <td class="td-num"><?= $i; ?></td>
+                                    <td class="td-num <?= $class_alpha; ?>"><?= $a; ?></td>
                                     <td>
                                         <div class="progress-wrapper">
                                             <div class="progress-track">
@@ -223,7 +272,7 @@ $nama_bulan = [
                             <?php 
                                 }
                             } else {
-                                echo "<tr><td colspan='8' class='msg-info'>Belum ada data siswa di kelas ($nama_kelas_str) ini.</td></tr>";
+                                echo "<tr><td colspan='8' class='msg-info'>Belum ada data siswa di kelas ini.</td></tr>";
                             }
                             ?>
                         </tbody>
@@ -235,8 +284,8 @@ $nama_bulan = [
                 <div class="empty-state">
                     <i class="fas fa-filter empty-icon"></i>
                     <p class="empty-text">
-                        Silakan pilih <b>Kelas</b> dan <b>Mata Pelajaran</b> di atas<br>
-                        untuk menampilkan laporan absensi siswa.
+                        Silakan pilih <b>Kelas</b> dan <b>Jenis Laporan</b> di atas<br>
+                        untuk menampilkan data.
                     </p>
                 </div>
 
@@ -244,13 +293,14 @@ $nama_bulan = [
 
             <div>
                 <a href="../data/menu_absensi.php" class="link-back">
-                    <i class="fas fa-arrow-left"></i>
+                    <i class="fas fa-arrow-left"></i> Kembali
                 </a>
             </div>
 
         </div>
-        <script src="../js/admin.js"></script>
-        <script src="../js/script.js"></script>
+
+        <script src="../js/admin.js"></script> 
+    <script src="../js/script.js"></script>
     </div>
 </body>
 </html>

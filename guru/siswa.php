@@ -3,7 +3,7 @@ session_start();
 require_once "../config/database.php";
 
 $active_tab = 'siswa';
-include "layout_header.php";
+include "layout/header.php";
 
 // --- LOGIC BARU (SESUAI GAMBAR DATABASE KAMU) ---
 
@@ -120,4 +120,4 @@ $result = mysqli_query($conn, $final_query);
     </div>
 </div>
 
-<?php include "layout_footer.php"; ?>
+<?php include "layout/footer.php"; ?>

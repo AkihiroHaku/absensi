@@ -36,12 +36,21 @@ if (isset($_POST['tambah_mapel'])) {
 }
 
 // Logic Hapus Mapel
-if (isset($_GET['hapus_mapel'])) {
-    $id_mapel = $_GET['hapus_mapel'];
-    mysqli_query($conn, "DELETE FROM mapel WHERE id_mapel = '$id_mapel'");
-    header("Location: atur_mapel.php?id=$id_kelas");
-    exit;
+if (isset($_GET['aksi']) && $_GET['aksi'] == 'hapus' && isset($_GET['id_mapel'])) {
+    $id_mapel_hapus = mysqli_real_escape_string($conn, $_GET['id_mapel']);
+
+    // Hapus dari database
+    $q_hapus = mysqli_query($conn, "DELETE FROM mapel WHERE id_mapel = '$id_mapel_hapus'");
+
+    if ($q_hapus) {
+        // Redirect kembali ke halaman ini (refresh bersih)
+        header("Location: atur_mapel.php?id=$id_kelas&msg=sukses_hapus");
+        exit;
+    } else {
+        echo "Gagal menghapus: " . mysqli_error($conn);
+    }
 }
+// ------------------------------------------
 ?>
 
 
@@ -64,6 +73,14 @@ if (isset($_GET['hapus_mapel'])) {
         <?php include "../layout/topbar.php"; ?>
 
         <div class="content-wrapper">
+            <div class="form-header">
+                <h4 class="form-title">
+                    Mapel Kelas <?= $d_kelas['nama_kelas']; ?>
+                </h4>
+                <a href="data_kelas.php" class="btn-back">
+                    <i class="fas fa-arrow-left"></i> Kembali
+                </a>
+            </div>
             <form action="" method="POST" class="kelas-form">
                 <input type="text" name="nama_mapel" class="input-text" placeholder="Nama Mata Pelajaran..." required>
                 <button type="submit" name="tambah_mapel" class="btn-submit">
@@ -71,58 +88,59 @@ if (isset($_GET['hapus_mapel'])) {
                 </button>
             </form>
 
-            <div class="mapel-grid">
-                <?php
-                $q_mapel = mysqli_query($conn, "SELECT * FROM mapel WHERE id_kelas = '$id_kelas'");
-                if (mysqli_num_rows($q_mapel) > 0) {
-                    while ($m = mysqli_fetch_assoc($q_mapel)) {
-                ?>
-                        <div class="mapel-card">
-                            <div class="mapel-info">
-                                <div class="mapel-icon">
-                                    <i class="fas fa-book"></i>
-                                </div>
-                                <div class="mapel-name" id="nama_<?= $m['id_mapel']; ?>">
-                                    <?= $m['nama_mapel']; ?>
-                                </div>
+
+        <div class="mapel-grid">
+            <?php
+            $q_mapel = mysqli_query($conn, "SELECT * FROM mapel WHERE id_kelas = '$id_kelas'");
+            if (mysqli_num_rows($q_mapel) > 0) {
+                while ($m = mysqli_fetch_assoc($q_mapel)) {
+            ?>
+                    <div class="mapel-card">
+                        <div class="mapel-info">
+                            <div class="mapel-icon">
+                                <i class="fas fa-book"></i>
                             </div>
-
-                            <div class="action-buttons">
-
-                                <button type="button" class="btn-edit-icon"
-                                    onclick="bukaModalEdit('<?= $m['id_mapel']; ?>', '<?= $m['nama_mapel']; ?>')"
-                                    title="Edit Nama">
-                                    <i class="fas fa-pen"></i>
-                                </button>
-
-                                <a href="hapus_mapel.php?id=<?= $m['id_mapel']; ?>&id_kelas=<?= $id_kelas; ?>"
-                                    class="btn-delete-icon"
-                                    onclick="return confirm('Hapus mapel ini?')"
-                                    title="Hapus Mapel">
-                                    <i class="fas fa-trash-alt"></i>
-                                </a>
-
+                            <div class="mapel-name" id="nama_<?= $m['id_mapel']; ?>">
+                                <?= $m['nama_mapel']; ?>
                             </div>
                         </div>
-                <?php
-                    }
-                } else {
-                    echo "<p style='color:#ee5253;'>Belum ada mapel di kelas ini.</p>";
+
+                        <div class="action-buttons">
+
+                            <button type="button" class="btn-edit-icon"
+                                onclick="bukaModalEdit('<?= $m['id_mapel']; ?>', '<?= $m['nama_mapel']; ?>')"
+                                title="Edit Nama">
+                                <i class="fas fa-pen"></i>
+                            </button>
+
+                            <a href="atur_mapel.php?id=<?= $id_kelas ?>&aksi=hapus&id_mapel=<?= $m['id_mapel'] ?>"
+                                class="btn-delete-icon"
+                                onclick="return confirm('Hapus mapel ini?')"
+                                title="Hapus Mapel">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+
+                        </div>
+                    </div>
+            <?php
                 }
-                ?>
-            </div>
+            } else {
+                echo "<p style='color:#ee5253;'>Belum ada mapel di kelas ini.</p>";
+            }
+            ?>
         </div>
+    </div>
     </div>
     <div id="modalEdit" class="modal-overlay">
         <div class="modal-box">
             <div class="modal-title">Edit Mata Pelajaran</div>
-            
+
             <form action="" method="POST">
                 <input type="hidden" name="id_mapel_edit" id="input_id_mapel">
-                
+
                 <label style="font-size:12px; font-weight:bold; color:#666;">Nama Mapel:</label>
                 <input type="text" name="nama_mapel_edit" id="input_nama_mapel" class="form-control" required autocomplete="off">
-                
+
                 <div class="modal-buttons">
                     <button type="button" onclick="tutupModal()" class="btn-reset">
                         Batal

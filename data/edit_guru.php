@@ -147,7 +147,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                             <div class="form-group">
                                 <label>No Handphone</label>
-                                <input type="text" name="no_hp" value="<?= $data['no_hp'] ?>">
+                                <input type="text" name="no_hp" class="form-control" placeholder="masukan no hp" value="<?= $data['no_hp']; ?>">
                             </div>
 
                         </div>
@@ -160,13 +160,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <div class="account-section">
                                 <div class="form-group">
                                     <label>Username <span class="required">*</span></label>
-                                    <input type="text" name="username" class="form-control" value="<?= $data['username']; ?>" required>
+                                    <input type="text" name="username" class="form-control" placeholder="masukan username" value="<?= $data['username']; ?>" required>
                                 </div>
 
                                 <div class="form-group">
                                     <label>Password Baru</label>
                                     <div class="password-wrapper">
-                                        <input type="password" name="password" class="form-control">
+                                        <input type="password" name="password" placeholder="masukan password" class="form-control">
                                         <i class="fas fa-eye toggle-password"></i>
                                     </div>
                                 </div>

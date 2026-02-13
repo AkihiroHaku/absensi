@@ -14,6 +14,15 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 document.addEventListener("DOMContentLoaded", function () {
+    const alertBox = document.getElementById("auto-alert");
+    if (alertBox) {
+        setTimeout(() => {
+            alertBox.classList.add("hide");
+        }, 3000); // 3 detik
+    }
+});
+
+document.addEventListener("DOMContentLoaded", function () {
     const currentPage = window.location.pathname.split("/").pop();
 
     document.querySelectorAll(".menu a").forEach(link => {
@@ -112,5 +121,20 @@ window.onclick = function (event) {
     let modal = document.getElementById('modalEdit');
     if (event.target == modal) {
         modal.style.display = "none";
+    }
+}
+
+function togglePassword() {
+    const passwordInput = document.getElementById("password");
+    const eyeIcon = document.getElementById("eyeIcon");
+
+    if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+        eyeIcon.classList.remove("fa-eye");
+        eyeIcon.classList.add("fa-eye-slash");
+    } else {
+        passwordInput.type = "password";
+        eyeIcon.classList.remove("fa-eye-slash");
+        eyeIcon.classList.add("fa-eye");
     }
 }

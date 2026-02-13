@@ -9,9 +9,9 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 }
 
 $judul_halaman = "Data Guru";
-$deskripsi_halaman = "Kelola data guru.";
 $active_menu = 'data_guru';
 ?>
+
 <!DOCTYPE html>
 <html lang="id">
 
@@ -33,8 +33,9 @@ $active_menu = 'data_guru';
         <?php include "../layout/topbar.php"; ?>
 
         <?php if (isset($_SESSION['berhasil'])): ?>
-            <div class="alert alert-success" style="margin-top: 20px;">
-                <i class="fas fa-check-circle"></i> <?= $_SESSION['berhasil']; ?>
+            <div class="alert alert-success" id="auto-alert">
+                <i class="fas fa-check-circle"></i>
+                <?= $_SESSION['berhasil']; ?>
             </div>
             <?php unset($_SESSION['berhasil']); ?>
         <?php endif; ?>
@@ -63,12 +64,17 @@ $active_menu = 'data_guru';
                             <th>No. HP</th>
                             <th>Nama Lengkap</th>
                             <th>Username</th>
-                            <th width="15%">Aksi</th>
+                            <th width="10%">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php
-                        $query = mysqli_query($conn, "SELECT * FROM guru ORDER BY nama_guru ASC");
+                        $query = mysqli_query($conn, "
+                            SELECT guru.*, users.username 
+                            FROM guru 
+                            LEFT JOIN users ON guru.id_user = users.id_user 
+                            ORDER BY guru.nama_guru ASC
+                        ");
 
                         if (mysqli_num_rows($query) > 0) {
                             $no = 1;
@@ -92,7 +98,7 @@ $active_menu = 'data_guru';
                         <?php
                             }
                         } else {
-                            echo "<tr><td colspan='5' style='text-align:center; padding: 30px; color: #999;'>Belum ada data guru.</td></tr>";
+                            echo "<tr><td colspan='6' style='text-align:center; padding: 30px; color: #999;'>Belum ada data guru.</td></tr>";
                         }
                         ?>
                     </tbody>

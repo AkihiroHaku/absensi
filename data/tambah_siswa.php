@@ -68,8 +68,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         if (mysqli_num_rows($cek_nis) > 0) {
                             $errors[] = "NIS $nis sudah terdaftar.";
                         } else {
-                            // PERBAIKAN QUERY INSERT:
-                            // Tambahkan kolom 'id_kelas' dan isi dengan variabel $id_kelas_target
                             $query = "INSERT INTO $table (nis, nama, jurusan, id_kelas) 
                                       VALUES ('$nis', '$nama', '$jurusan', '$id_kelas_target')";
 
@@ -83,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 }
 
                 if ($success_count > 0) {
-                    header("Location: data_siswa.php?success=1");
+                    header("Location: data_siswa.php?id_kelas=$id_kelas_target&success=1");
                     exit;
                 } else {
                     $error = "Gagal menyimpan data. " . implode(", ", $errors);
@@ -98,7 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 $id_kelas = isset($_GET['id_kelas']) ? intval($_GET['id_kelas']) : 0;
 
 if ($id_kelas <= 0) {
-    header("Location: data_siswa.php?id_kelas=$id_kelas");
+    header("Location:data_siswa.php?id_kelas=$id_kelas");
     exit;
 }
 ?>
@@ -176,7 +174,7 @@ if ($id_kelas <= 0) {
                                 <thead>
                                     <tr>
                                         <th width="5%">No</th>
-                                        <th>NIS</th>
+                                        <th width="15%">NIS</th>
                                         <th>Nama Siswa</th>
                                         <th width="15%">Aksi</th>
                                     </tr>

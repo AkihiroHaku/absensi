@@ -267,6 +267,28 @@ hr {
     opacity: 0.9;
 }
 
+.form-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.form-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.btn-back {
+    padding: 6px 14px;
+    background: #6c757d;
+    color: #fff;
+    border-radius: 6px;
+    font-size: 13px;
+    text-decoration: none;
+}
+
 .form-container {
     max-width: 100%;
     margin-top: 20px;
@@ -282,10 +304,6 @@ hr {
     flex: 1;
 }
 
-.form-group {
-    margin-bottom: 15px;
-}
-
 .form-group label {
     display: block;
     margin-bottom: 5px;
@@ -295,7 +313,7 @@ hr {
 
 .form-group input,
 .form-group select {
-    width: 100%;
+    width: auto;
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 5px;
@@ -597,9 +615,6 @@ hr {
 }
 
 /* Label & Input */
-.form-group {
-    margin-bottom: 20px;
-}
 
 .form-group label {
     display: block;
@@ -616,7 +631,6 @@ hr {
     border-radius: 8px;
     font-size: 14px;
     box-sizing: border-box;
-    /* Agar padding tidak merusak lebar */
     transition: 0.3s;
 }
 
@@ -679,8 +693,6 @@ hr {
     }
 }
 
-/* --- FILE: css/data.css --- */
-
 /* Container Utama Form */
 .form-container {
     background: white;
@@ -712,22 +724,6 @@ hr {
     font-weight: 600;
     color: #444;
     font-size: 14px;
-}
-
-.form-control {
-    width: 100%;
-    padding: 12px 15px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 14px;
-    box-sizing: border-box;
-    transition: 0.3s;
-}
-
-.form-control:focus {
-    border-color: #4361ee;
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
 }
 
 /* Helper Text (Hint di bawah input) */
@@ -886,8 +882,7 @@ hr {
 /* mapel  */
 .mapel-grid {
     display: grid;
-    grid-template-columns:
-        repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 15px;
 }
 
@@ -918,17 +913,55 @@ hr {
 }
 
 .mapel-card {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    border: 1px solid #edf2f7;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.02);
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between; 
+    align-items: center;            
+    background: #fff;
+    border: 1px solid #ddd;
+    border-left: 5px solid #435ebe; 
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.mapel-info {
+    display: flex;
     align-items: center;
-    transition: 0.3s;
-    position: relative;
-    overflow: hidden;
+    flex: 1;       
+    min-width: 0;
+    margin-right: 15px; 
+}
+
+.mapel-icon {
+    flex-shrink: 0; 
+    width: 40px;
+    height: 40px;
+    background: #eef2ff;
+    color: #435ebe;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    margin-right: 15px;
+    font-size: 18px;
+}
+
+.mapel-name {
+    font-weight: 600;
+    color: #333;
+    font-size: 15px;
+    white-space: normal;       
+    word-wrap: break-word;     
+    word-break: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.4;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0; /* KUNCI 4: Larang tombol menyusut/gepeng */
 }
 
 .mapel-card:hover {
@@ -949,30 +982,6 @@ hr {
     border-radius: 4px 0 0 4px;
 }
 
-.mapel-info {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.mapel-icon {
-    font-size: 24px;
-    color: #4361ee;
-    width: 45px;
-    height: 45px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-}
-
-.mapel-name {
-    font-weight: 600;
-    color: #2d3748;
-    font-size: 15px;
-}
-
-/* Tombol Hapus yang Lebih Cantik */
 .btn-delete-icon {
     color: #e74c3c;
     padding: 1px;
@@ -1142,8 +1151,8 @@ hr {
 /* Wadah Tombol Radio */
 .radio-group {
     display: flex;
-    gap: 8px; /* Jarak antar tombol */
-    flex-wrap: wrap; /* Biar turun ke bawah kalau layar HP sempit */
+    gap: 8px; 
+    flex-wrap: wrap;
 }
 
 /* Label Pembungkus (Kotak Tombol) */
@@ -1185,7 +1194,6 @@ hr {
 
 /* --- LOGIKA WARNA SAAT DIPILIH (CHECKED) --- */
 
-/* 1. HADIR (Hijau) */
 .radio-option input:checked + .lbl-h {
     background: #2ecc71;
     color: white;
@@ -1193,7 +1201,6 @@ hr {
     box-shadow: 0 4px 6px rgba(46, 204, 113, 0.3);
 }
 
-/* 2. IZIN (Biru) */
 .radio-option input:checked + .lbl-i {
     background: #3498db;
     color: white;
@@ -1201,7 +1208,6 @@ hr {
     box-shadow: 0 4px 6px rgba(52, 152, 219, 0.3);
 }
 
-/* 3. SAKIT (Kuning) */
 .radio-option input:checked + .lbl-s {
     background: #f1c40f;
     color: white;
@@ -1209,7 +1215,6 @@ hr {
     box-shadow: 0 4px 6px rgba(241, 196, 15, 0.3);
 }
 
-/* 4. ALPHA (Merah) */
 .radio-option input:checked + .lbl-a {
     background: #e74c3c;
     color: white;
@@ -1219,7 +1224,6 @@ hr {
 
 /* --- STYLE TAMBAHAN: REKAP ABSENSI (rekap_guru.php) --- */
 
-/* 1. Header & Filter Area */
 .rekap-header {
     display: flex;
     flex-wrap: wrap;
@@ -1268,16 +1272,15 @@ hr {
     font-size: 13px;
     transition: 0.3s;
 }
+
 .btn-print:hover { background: #27ae60; }
 
-/* 3. Tabel Header (Warna-warni) */
 .th-center { text-align: center !important; }
 .col-h { color: #2ecc71; }
 .col-i { color: #3498db; } 
 .col-s { color: #f1c40f; }
 .col-a { color: #e74c3c; }
 
-/* 4. Tabel Body */
 .td-bold { font-weight: bold; }
 .td-num { text-align: center; font-weight: 500; }
 .text-red { color: #e74c3c; font-weight: bold; }
@@ -1346,7 +1349,7 @@ hr {
 .st-i { color: #3498db; font-weight: bold; } 
 .st-s { color: #f1c40f; font-weight: bold; } 
 .st-a { color: #e74c3c; font-weight: bold; } 
-.st-none { color: #e2e8f0; font-weight: normal; font-size: 15px; } /* Strip/Titik (Abu) */
+.st-none { color: #e2e8f0; font-weight: normal; font-size: 15px; } 
 
 .btn-secondary {
     background: #95a5a6;
@@ -1369,7 +1372,6 @@ hr {
 
 /* --- STYLE TAMBAHAN: REKAP SISWA --- */
 
-/* 1. Kotak Filter Abu-abu */
 .filter-box {
     display: flex;
     flex-wrap: wrap;

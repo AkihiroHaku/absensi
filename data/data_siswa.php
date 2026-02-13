@@ -17,7 +17,7 @@ $id_kelas_terpilih = $_GET['id_kelas'] ?? null;
 
 <!DOCTYPE html>
 <html lang="id">
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <head>
     <meta charset="UTF-8">
     <title>Data Kelas</title>
@@ -119,11 +119,11 @@ $id_kelas_terpilih = $_GET['id_kelas'] ?? null;
                     <table class="modern-table" id="siswa-table">
                         <thead>
                             <tr>
-                                <th>No</th>
-                                <th>NIS</th>
-                                <th>Nama Siswa</th>
-                                <th>Jurusan</th>
-                                <th>Aksi</th>
+                                <th width="5%">No</th>
+                                <th width="20%">NIS</th>
+                                <th width="35%">Nama Siswa</th>
+                                <th width="25%">Jurusan</th>
+                                <th width="15%">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -139,7 +139,7 @@ $id_kelas_terpilih = $_GET['id_kelas'] ?? null;
                                         <td><?= $s['jurusan']; ?></td>
                                         <td>
                                             <a href="edit_siswa.php?nis=<?= $s['nis']; ?>" class="btn-small btn-edit"><i class="fas fa-edit"></i></a>
-                                            <a href="hapus_siswa.php?nis=<?= $s['nis']; ?>" class="btn-small btn-delete" onclick="return confirm('Hapus siswa ini?')"><i class="fas fa-trash"></i></a>
+                                            <a href="hapus_siswa.php?nis=<?= $s['nis']; ?>" class="btn-small btn-delete" onclick="return confirm('Yakin ingin menghapus siswa <?= $s['nama']; ?>? Semua data absensinya juga akan hilang.')"><i class="fas fa-trash"></i></a>
                                         </td>
                                     </tr>
                             <?php

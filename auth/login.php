@@ -17,6 +17,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = mysqli_real_escape_string($conn, $_POST['username']);
     $password = $_POST['password'];
 
+    // Query User + Role
     $query = "SELECT users.*, roles.nama_role 
               FROM users 
               JOIN roles ON users.id_role = roles.id_role
@@ -28,19 +29,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $user = mysqli_fetch_assoc($result);
 
         if (password_verify($password, $user['password'])) {
-
+            
+            // 1. SET SESSION STANDAR (AKUN)
             $_SESSION['login'] = true;
             $_SESSION['id_user'] = $user['id_user'];
             $_SESSION['username'] = $user['username'];
             $_SESSION['role'] = $user['nama_role']; 
+            // 2. SET SESSION KHUSUS BERDASARKAN ROLE
             if ($user['nama_role'] == 'guru') {
                 
                 $q_guru = mysqli_query($conn, "SELECT * FROM guru WHERE id_user = '" . $user['id_user'] . "'");
-                
-                // Cek apakah data gurunya ada?
+
                 if (mysqli_num_rows($q_guru) > 0) {
                     $d_guru = mysqli_fetch_assoc($q_guru);
-                    $_SESSION['id_guru']   = $d_guru['id_guru'];
+
+                    $_SESSION['id_guru']   = $d_guru['id_guru']; 
                     $_SESSION['nama_guru'] = $d_guru['nama_guru']; 
                     $_SESSION['nip']       = $d_guru['nip'];
                 }
@@ -66,6 +69,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Absensi</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="../css/auth.css">
@@ -95,7 +99,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <input type="text" name="username" placeholder="Masukan Username" required>
                 </div>
                 <div class="input-icon">
-                    <i class="fa-solid fa-lock"></i>
+                    <i class="fa-solid fa-lock fas"></i>
                     <input type="password" name="password" placeholder="Masukan Password" required>
                 </div>
                 <button class="btn-login" type="submit">Masuk</button>

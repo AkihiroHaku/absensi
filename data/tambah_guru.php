@@ -14,31 +14,49 @@ $active_menu = 'data_guru';
 
 // --- PROSES SIMPAN ---
 if (isset($_POST['simpan_guru'])) {
+    // 1. Ambil Inputan
     $nip      = htmlspecialchars($_POST['nip']);
-    $nama     = htmlspecialchars($_POST['nama_guru']);
-    $jk       = $_POST['jenis_kelamin'];
-    $hp       = $_POST['no_hp'];
+    $nama     = htmlspecialchars($_POST['nama_guru']); // Pastikan name di HTML: nama_guru
+    $jk       = $_POST['jenis_kelamin'];              // Pastikan name di HTML: jenis_kelamin
+    $hp       = $_POST['no_hp'];                      // Pastikan name di HTML: no_hp
     $username = htmlspecialchars($_POST['username']);
-    $password = $_POST['password']; 
+    $password = $_POST['password'];
 
-    $password_hash = password_hash($password, PASSWORD_DEFAULT);
-    $id_role_guru = 2; 
-    $query_user = "INSERT INTO users (username, password, id_role) VALUES ('$username', '$password_hash', '$id_role_guru')";
-    
-    if (mysqli_query($conn, $query_user)) {
-        $id_user_baru = mysqli_insert_id($conn);
-        $query_guru = "INSERT INTO guru (id_user, nip, nama_guru, jenis_kelamin, no_hp) 
-                       VALUES ('$id_user_baru', '$nip', '$nama', '$jk', '$hp')";
+    // --- CEK USERNAME DULU (Anti Error Duplicate) ---
+    $cek_user = mysqli_query($conn, "SELECT username FROM users WHERE username = '$username'");
 
-        if (mysqli_query($conn, $query_guru)) {
-            echo "<script>alert('Berhasil! Akun login dan Data Guru telah dibuat.'); window.location='data_guru.php';</script>";
-        } else {
-            mysqli_query($conn, "DELETE FROM users WHERE id_user = '$id_user_baru'");
-            echo "<script>alert('Gagal menyimpan biodata guru!');</script>";
-        }
-
+    if (mysqli_num_rows($cek_user) > 0) {
+        // Jika username sudah ada, stop dan kasih peringatan
+        echo "<script>alert('Gagal! Username \"$username\" sudah dipakai. Silakan ganti username lain.');</script>";
     } else {
-        echo "<script>alert('Gagal membuat akun login! Username mungkin sudah ada.');</script>";
+        // Jika username aman, baru simpan
+        $password_hash = password_hash($password, PASSWORD_DEFAULT);
+        $id_role_guru = 2; // Sesuaikan ID Role Guru di database kamu
+
+        // Simpan ke users
+        $query_user = "INSERT INTO users (username, password, id_role) VALUES ('$username', '$password_hash', '$id_role_guru')";
+
+        if (mysqli_query($conn, $query_user)) {
+            $id_user_baru = mysqli_insert_id($conn);
+
+            // Simpan ke guru
+            $query_guru = "INSERT INTO guru (id_user, nip, nama_guru, jenis_kelamin, no_hp) 
+                           VALUES ('$id_user_baru', '$nip', '$nama', '$jk', '$hp')";
+
+            if (mysqli_query($conn, $query_guru)) {
+                $_SESSION['berhasil'] = "Guru baru berhasil ditambahkan!";
+                header("Location: data_guru.php");
+                exit;
+            } else {
+                // Rollback: Hapus user jika gagal simpan biodata
+                mysqli_query($conn, "DELETE FROM users WHERE id_user = '$id_user_baru'");
+                $_SESSION['gagal'] = "Gagal menyimpan biodata guru!";
+                header("Location: tambah_guru.php");
+                exit;
+            }
+        } else {
+            echo "<script>alert('Gagal membuat akun login!');</script>";
+        }
     }
 }
 ?>
@@ -96,12 +114,12 @@ if (isset($_POST['simpan_guru'])) {
 
                             <div class="form-group">
                                 <label>Nama Lengkap <span class="required">*</span></label>
-                                <input type="text" name="nama" class="form-control" placeholder="Nama lengkap beserta gelar" required>
+                                <input type="text" name="nama_guru" class="form-control" placeholder="Nama lengkap beserta gelar" required>
                             </div>
 
                             <div class="form-group">
                                 <label>Jenis Kelamin</label>
-                                <select name="jk" class="form-control">
+                                <select name="jenis_kelamin" class="form-control">
                                     <option value="L">Laki-laki</option>
                                     <option value="P">Perempuan</option>
                                 </select>
@@ -109,7 +127,7 @@ if (isset($_POST['simpan_guru'])) {
 
                             <div class="form-group">
                                 <label>No. Handphone</label>
-                                <input type="text" name="hp" class="form-control" placeholder="08xxxxxxx">
+                                <input type="text" name="no_hp" class="form-control" placeholder="08xxxxxxx">
                             </div>
                         </div>
 
@@ -138,7 +156,8 @@ if (isset($_POST['simpan_guru'])) {
                         <button type="reset" class="btn-reset">
                             <i class="fas fa-undo"></i> Reset
                         </button>
-                        <button type="submit" class="btn-submit">
+
+                        <button type="submit" name="simpan_guru" class="btn-submit">
                             <i class="fas fa-save"></i> Simpan Guru
                         </button>
                     </div>

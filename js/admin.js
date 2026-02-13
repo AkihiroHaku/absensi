@@ -14,7 +14,6 @@ document.addEventListener('DOMContentLoaded', function () {
         tbody.appendChild(newRow);
         updateRowNumbers();
     });
-
     // Fungsi untuk menghapus baris
     document.addEventListener('click', function (e) {
         if (e.target.classList.contains('btn-delete-row') || e.target.parentElement.classList.contains('btn-delete-row')) {
@@ -91,7 +90,6 @@ function closeDeleteGuruModal() {
     document.getElementById("delete-guru-modal").style.display = "none";
 }
 
-// Klik luar modal → tutup
 document.addEventListener("click", function (e) {
     const modal = document.getElementById("delete-guru-modal");
     if (e.target === modal) {
@@ -99,3 +97,18 @@ document.addEventListener("click", function (e) {
     }
 });
 
+const flashData = document.querySelector('.flash-data');
+if (flashData) {
+    const status = flashData.getAttribute('data-status'); 
+    const pesan = flashData.getAttribute('data-msg');
+
+    Swal.fire({
+        icon: status,
+        title: pesan,
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true
+    });
+}

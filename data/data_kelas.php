@@ -56,7 +56,7 @@ if (isset($_GET['hapus'])) {
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Tingkat</label>
+                        <label>Kelas</label>
                         <select name="tingkat" required>
                             <option value="">-- Pilih --</option>
                             <option value="10">Kelas 10</option>
@@ -87,7 +87,7 @@ if (isset($_GET['hapus'])) {
                 <thead>
                     <tr>
                         <th>No</th>
-                        <th>Tingkat</th>
+                        <th>Kelas</th>
                         <th>Jurusan</th>
                         <th>Nama Kelas</th>
                         <th>Aksi</th>
@@ -97,24 +97,40 @@ if (isset($_GET['hapus'])) {
                     <?php
                     $no = 1;
                     $q = mysqli_query($conn, "SELECT * FROM kelas ORDER BY tingkat ASC, jurusan ASC");
-                    while ($d = mysqli_fetch_assoc($q)) {
+
+                    if (mysqli_num_rows($q) > 0) {
+                        while ($d = mysqli_fetch_assoc($q)) {
                     ?>
+                            <tr>
+                                <td><?= $no++; ?></td>
+                                <td>Kelas <?= $d['tingkat']; ?></td>
+                                <td><?= $d['jurusan']; ?></td>
+                                <td><?= $d['nama_kelas']; ?></td>
+                                <td>
+                                    <a href="atur_mapel.php?id=<?= $d['id_kelas']; ?>" class="btn-warning">Mapel</a>
+                                    <a href="edit_kelas.php?id=<?= $d['id_kelas']; ?>" class="fas fa-edit btn-small btn-edit"></a>
+                                    <a href="javascript:void(0)"
+                                        onclick="openDeleteKelasModal(<?= $d['id_kelas']; ?>)"
+                                        class="btn-small btn-delete">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        <?php
+                        } 
+
+                    } else {
+                        
+                        ?>
                         <tr>
-                            <td><?= $no++; ?></td>
-                            <td>Kelas <?= $d['tingkat']; ?></td>
-                            <td><?= $d['jurusan']; ?></td>
-                            <td><?= $d['nama_kelas']; ?></td>
-                            <td>
-                                <a href="atur_mapel.php?id=<?= $d['id_kelas']; ?>" class="btn-warning">Mapel</a>
-                                <a href="edit_kelas.php?id=<?= $d['id_kelas']; ?>" class="fas fa-edit btn-small btn-edit"></a>
-                                <a href="javascript:void(0)"
-                                    onclick="openDeleteKelasModal(<?= $d['id_kelas']; ?>)"
-                                    class="btn-small btn-delete">
-                                    <i class="fas fa-trash"></i>
-                                </a>
+                            <td colspan="5" style="text-align:center; padding: 30px; color: #888;">
+                                <i class="fas fa-info-circle" style="margin-bottom:5px;"></i><br>
+                                Belum ada data kelas yang ditambahkan.
                             </td>
                         </tr>
-                    <?php } ?>
+                    <?php
+                    } 
+                    ?>
                 </tbody>
             </table>
         </div>

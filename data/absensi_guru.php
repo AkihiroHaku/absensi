@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     if ($count_berhasil > 0) {
-        echo "<script>alert('Absensi tanggal $tgl berhasil disimpan!'); window.location='absen_guru.php?tanggal=$tgl';</script>";
+        echo "<script>alert('Absensi tanggal $tgl berhasil disimpan!'); window.location='absensi_guru.php?tanggal=$tgl';</script>";
     }
 }
 ?>

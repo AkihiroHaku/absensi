@@ -3,7 +3,7 @@ session_start();
 require_once "../config/database.php";
 
 $active_tab = 'dashboard'; 
-include "layout_header.php";
+include "layout/header.php";
 
 // --- LOGIC PHP: MENGHITUNG DATA REAL HARI INI ---
 
@@ -14,22 +14,22 @@ $tgl_hari_ini = date('Y-m-d');
 // Kita gunakan fungsi COUNT untuk menghitung baris data di tabel 'absensi'
 
 // Hitung HADIR
-$q_h = mysqli_query($conn, "SELECT COUNT(*) as jum FROM absensi WHERE status='H' AND tanggal='$tgl_hari_ini'");
+$q_h = mysqli_query($conn, "SELECT COUNT(*) as jum FROM absensi_siswa WHERE status='H' AND tanggal='$tgl_hari_ini'");
 $d_h = mysqli_fetch_assoc($q_h);
 $hadir = $d_h['jum'];
 
 // Hitung SAKIT
-$q_s = mysqli_query($conn, "SELECT COUNT(*) as jum FROM absensi WHERE status='S' AND tanggal='$tgl_hari_ini'");
+$q_s = mysqli_query($conn, "SELECT COUNT(*) as jum FROM absensi_siswa WHERE status='S' AND tanggal='$tgl_hari_ini'");
 $d_s = mysqli_fetch_assoc($q_s);
 $sakit = $d_s['jum'];
 
 // Hitung IZIN
-$q_i = mysqli_query($conn, "SELECT COUNT(*) as jum FROM absensi WHERE status='I' AND tanggal='$tgl_hari_ini'");
+$q_i = mysqli_query($conn, "SELECT COUNT(*) as jum FROM absensi_siswa WHERE status='I' AND tanggal='$tgl_hari_ini'");
 $d_i = mysqli_fetch_assoc($q_i);
 $izin = $d_i['jum'];
 
 // Hitung ALPHA
-$q_a = mysqli_query($conn, "SELECT COUNT(*) as jum FROM absensi WHERE status='A' AND tanggal='$tgl_hari_ini'");
+$q_a = mysqli_query($conn, "SELECT COUNT(*) as jum FROM absensi_siswa WHERE status='A' AND tanggal='$tgl_hari_ini'");
 $d_a = mysqli_fetch_assoc($q_a);
 $alpha = $d_a['jum'];
 
@@ -87,4 +87,4 @@ if ($total_masuk_data > 0) {
     <p>Jika angka masih 0, silakan lakukan absensi di menu <b>Absensi Harian</b>.</p>
 </div>
 
-<?php include "layout_footer.php"; ?>
+<?php include "layout/footer.php"; ?>
